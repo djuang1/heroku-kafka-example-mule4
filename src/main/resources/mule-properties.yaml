@@ -1,0 +1,4 @@
+kafka:
+  ssl.endpoint.identification.algorithm: " "
+  topic: "brazos-30825.mule"
+  groupId: "brazos-30825.mule-group"

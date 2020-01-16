@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:kafka="http://www.mulesoft.org/schema/mule/kafka" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/kafka http://www.mulesoft.org/schema/mule/kafka/current/mule-kafka.xsd">
+	<kafka:kafka-consumer-config name="Apache_Kafka_Consumer_configuration" doc:name="Apache Kafka Consumer configuration" doc:id="b9f976ee-771c-4b41-9ae4-e4ef00f6d9eb" >
+		<kafka:ssl-kafka-consumer-connection bootstrapServers="kafka+ssl://ec2-35-173-52-55.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-234-254-237.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-233-203-149.compute-1.amazonaws.com:9096,kafka+ssl://ec2-35-173-23-89.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-232-24-85.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-236-112-122.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-204-41-222.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-232-227-0.compute-1.amazonaws.com:9096" keyStorePassword="mule" keyStoreLocation="/Users/dejim.juang/Workspaces/seven-four/heroku-kafka-example-mule4/src/main/resources/keystore.jks" trustStorePassword="password" trustStoreLocation="/Users/dejim.juang/Workspaces/seven-four/heroku-kafka-example-mule4/src/main/resources/truststore.jks" groupId="${kafka.groupId}">
+			<kafka:additional-properties >
+				<kafka:additional-property key="security.protocol" value="SSL" />
+				<kafka:additional-property key="ssl.endpoint.identification.algorithm" value="${kafka.ssl.endpoint.identification.algorithm}"/>
+			</kafka:additional-properties>
+		</kafka:ssl-kafka-consumer-connection>
+	</kafka:kafka-consumer-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c1bb17c6-9c2d-465a-a4b3-a47eaecc412a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<kafka:kafka-producer-config name="Apache_Kafka_Producer_configuration" doc:name="Apache Kafka Producer configuration" doc:id="c49486ac-1d9f-4c77-8bbb-eb62152b4312" >
+		<kafka:ssl-kafka-producer-connection bootstrapServers="kafka+ssl://ec2-35-173-52-55.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-234-254-237.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-233-203-149.compute-1.amazonaws.com:9096,kafka+ssl://ec2-35-173-23-89.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-232-24-85.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-236-112-122.compute-1.amazonaws.com:9096,kafka+ssl://ec2-18-204-41-222.compute-1.amazonaws.com:9096,kafka+ssl://ec2-34-232-227-0.compute-1.amazonaws.com:9096" keyStorePassword="mule" keyStoreLocation="/Users/dejim.juang/Workspaces/seven-four/heroku-kafka-example-mule4/src/main/resources/keystore.jks" trustStorePassword="password" trustStoreLocation="/Users/dejim.juang/Workspaces/seven-four/heroku-kafka-example-mule4/src/main/resources/truststore.jks">
+			<kafka:additional-properties >
+				<kafka:additional-property key="security.protocol" value="SSL" />
+				<kafka:additional-property key="ssl.endpoint.identification.algorithm" value="${kafka.ssl.endpoint.identification.algorithm}" />
+			</kafka:additional-properties>
+		</kafka:ssl-kafka-producer-connection>
+	</kafka:kafka-producer-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="7f53198b-ac48-4512-9831-636201a835f0" file="mule-properties.yaml" />
+	<flow name="kafka-listenFlow1" doc:id="eb58bb83-4657-4f13-bb23-7895eac0e027" >
+		<http:listener doc:name="Listener" doc:id="5e32feca-f633-4590-bed9-69fc90e95953" config-ref="HTTP_Listener_config" path="/publish"/>
+		<kafka:producer doc:name="Publish Message" doc:id="0f53de10-0f8a-4690-8216-f111631db0a4" config-ref="Apache_Kafka_Producer_configuration" topic="${kafka.topic}" key="test">
+			<kafka:message ><![CDATA[#["Hello World!"]]]></kafka:message>
+		</kafka:producer>
+	</flow>
+	
+	<flow name="kafka-listenFlow" doc:id="708f4b7f-0c62-4164-bfbb-9285f30d362f" >
+		<kafka:consumer doc:name="Message Consumer" doc:id="8a6d4725-589b-4804-a734-deedf4105c4d" config-ref="Apache_Kafka_Consumer_configuration" topic="${kafka.topic}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5faf9b43-827a-41ea-8973-9db986e6a417" message="#[payload]"/>
+	</flow>
+	 
+</mule>
