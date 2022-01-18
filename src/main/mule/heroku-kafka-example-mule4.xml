@@ -25,47 +25,33 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		name="Apache_Kafka_Consumer_configuration"
 		doc:name="Apache Kafka Consumer configuration"
 		doc:id="47912ce0-ff0f-4d76-8ecb-eeccc6a95203">
-		<kafka:consumer-plaintext-connection groupId="noatak-72787.mule-group" endpointIdentificationAlgorithm="disabled">
+		<kafka:consumer-plaintext-connection groupId="${kafka.groupId}" endpointIdentificationAlgorithm="disabled">
 			<tls:context>
-				<tls:trust-store path="/Users/dejim.juang/Workspaces/seven-six/heroku-kafka-example-mule4/src/main/resources/truststore.jks" password="password" type="jks" />
-				<tls:key-store type="jks" path="/Users/dejim.juang/Workspaces/seven-six/heroku-kafka-example-mule4/src/main/resources/keystore.jks" keyPassword="password" password="password"/>
+				<tls:trust-store path="truststore.jks" password="${tls.truststore.password}" type="jks" />
+				<tls:key-store type="jks" path="keystore.jks" keyPassword="${tls.keystore.keyPassword}" password="${tls.keystore.password}"/>
 			</tls:context>
 			<kafka:bootstrap-servers >
-				<kafka:bootstrap-server value="kafka+ssl://ec2-52-200-255-3.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-24-157.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-34-239-230-122.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-215-96.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-52-4.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-204-107-149.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-52-54-116-169.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-209-6.compute-1.amazonaws.com:9096" />
+				<kafka:bootstrap-server value="${kafka.url}" />
 			</kafka:bootstrap-servers>
 			<kafka:topic-patterns >
-				<kafka:topic-pattern value="noatak-72787.mule-app" />
+				<kafka:topic-pattern value="${kafka.topic}" />
 			</kafka:topic-patterns>
 		</kafka:consumer-plaintext-connection>
 	</kafka:consumer-config>
 	<kafka:producer-config name="Apache_Kafka_Producer_configuration" doc:name="Apache Kafka Producer configuration" doc:id="79a3ffbf-e5a2-44db-9002-8b405261b100">
 		<kafka:producer-plaintext-connection endpointIdentificationAlgorithm="disabled">
 			<tls:context >
-				<tls:trust-store path="/Users/dejim.juang/Workspaces/seven-six/heroku-kafka-example-mule4/src/main/resources/truststore.jks" password="password" type="jks" />
-				<tls:key-store type="jks" path="/Users/dejim.juang/Workspaces/seven-six/heroku-kafka-example-mule4/src/main/resources/keystore.jks" keyPassword="password" password="password"/>
+				<tls:trust-store path="truststore.jks" password="${tls.truststore.password}" type="jks" />
+				<tls:key-store type="jks" path="keystore.jks" keyPassword="${tls.keystore.keyPassword}" password="${tls.keystore.password}"/>
 			</tls:context>
 			<kafka:bootstrap-servers >
-				<kafka:bootstrap-server value="kafka+ssl://ec2-52-200-255-3.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-24-157.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-34-239-230-122.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-215-96.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-52-4.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-204-107-149.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-52-54-116-169.compute-1.amazonaws.com:9096" />
-				<kafka:bootstrap-server value="kafka+ssl://ec2-18-211-209-6.compute-1.amazonaws.com:9096" />
+				<kafka:bootstrap-server value="${kafka.url}" />
 			</kafka:bootstrap-servers>
 		</kafka:producer-plaintext-connection>
 	</kafka:producer-config>
 	<flow name="heroku-kafka-example-mule4Flow" doc:id="c8b3abbe-2cbd-4667-a41c-c5d60b142cda" >
-		<http:listener doc:name="Listener" doc:id="7e3d29cf-fd5f-4406-947b-491b98fd1190" config-ref="HTTP_Listener_config" path="/publish"/>
-		<kafka:publish doc:name="Publish" doc:id="79a3ffbf-e5a2-44db-9002-8b405261b100" config-ref="Apache_Kafka_Producer_configuration" topic='#["noatak-72787.mule-app"]' key='#["test"]'>
+		<http:listener doc:name="/publish" doc:id="7e3d29cf-fd5f-4406-947b-491b98fd1190" config-ref="HTTP_Listener_config" path="/publish"/>
+		<kafka:publish doc:name="Publish" doc:id="79a3ffbf-e5a2-44db-9002-8b405261b100" config-ref="Apache_Kafka_Producer_configuration" topic="#[p('kafka.topic')]" key='#["test"]'>
 			<kafka:message ><![CDATA[#["Hello World!"]]]></kafka:message>
 		</kafka:publish>
 		<ee:transform doc:name="Transform Message" doc:id="067a71d6-bd0e-4d71-9fc3-8b0fa3f4f084" >

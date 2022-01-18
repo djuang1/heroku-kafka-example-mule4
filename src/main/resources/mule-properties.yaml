@@ -1,3 +1,11 @@
 kafka:
-  topic: "noatak-72787.mule-app"
-  groupId: "noatak-72787.mule-group"
+  ssl.endpoint.identification.algorithm: " "
+  topic: "pearl-97033.mule-app"
+  groupId: "pearl-97033.mule-group"
+  url: ""
+tls:
+  truststore:
+    password: ""
+  keystore:
+    password: ""
+    keyPassword: ""
